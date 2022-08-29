@@ -17,5 +17,5 @@ export default function Nav(){
         </NavItems>
         {showCart && <Cart />}
     </NavStyles>
-);ㄴㄴ
+);
 }
