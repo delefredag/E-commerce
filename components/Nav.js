@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import {FiShoppingBag} from 'react-icons/fi';
 import { NavStyles, NavItems } from '../styles/NavStyles.js';
+import Cart from './Cart.js';
 
 export default function Nav(){
     return (
@@ -12,6 +13,7 @@ export default function Nav(){
                 <h3>Cart</h3>
             </div>
         </NavItems>
+            <Cart/>
     </NavStyles>
-);
+);ㄴㄴ
 }
