@@ -3,6 +3,9 @@ import { CartWrapper, CartStyle, Card, CardInfo, EmptyStyle, Checkout, Cards,} f
 import {Quantity} from '../styles/ProductDetails'
 import {FaShoppingCart} from 'react-icons/fa';
 import {AiFillMinusCircle, AiFillPlusCircle } from 'react-icons/ai'
+//Import State
+import getStripe from '../lib/getStripe';
+
 
 //Animation Variants
 const card = {
@@ -23,35 +26,50 @@ const card = {
 
 export default function Cart(){
     const {cartItems, setShowCart, onAdd, onRemove, totalPrice } = useStateContext();
-    return(
+
+//Payment
+const handleCheckout = async () => {
+    const stripe = await getStripe();
+    const response = await fetch('/api/stripe', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(cartItems),
+    });
+    const data = await response.json();
+    await stripe.redirectToCheckout({ sessionId: data.id });
+};
+
+    return (
         <CartWrapper 
-        animate={{opacity: 1}}
-        initial={{opacity: 0}}
-        exit={{opacity : 0}}
-        onClick={()=> setShowCart(false)}>
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        onClick={() => setShowCart(false)}
+        >
             
             <CartStyle 
             //너무 가린다. x 50인데 줄임
-            animate={{x: '10%'}}
-            initial={{x: '0%'}}
-            exit={{x: '10%'}}
-            transition={{type:'twin'}}
-            onClick={(e) => e.stopPropagation()}>
+            initial={{ x: '50%'}}
+            animate={{ x: '0%'}}
+            exit={{ x: '50%'}}
+            transition={{ type: 'tween' }}
+            onClick={(e) => e.stopPropagation()}
+            >
                 {cartItems.length < 1 && (
                 <EmptyStyle
-                initial={{opacity: 0, scale: 0.8}}
-                animate={{opacity: 1, scale: 1}}
-                transition={{ delay : 0.2 }}
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.4 }}
                 >
                     <h1>You have more shopping to do 😉</h1>
-                    <FaShoppingCart/>
+                    <FaShoppingCart />
                 </EmptyStyle>
                 )}
-                <Cards variants={cards} initial="hidden" animate="show">
+                <Cards layout variants={cards} initial="hidden" animate="show">
                 {cartItems.length >=1 && (
                     cartItems.map((item)=> {
                         return(
-                           <Card variants={card} key={item.slug}>
+                           <Card layout variants={card} key={item.slug}>
                              <img 
                                 src={item.image.data.attributes.formats.thumbnail.url} 
                                 alt={item.title} />
@@ -76,9 +94,9 @@ export default function Cart(){
                 )}
                 </Cards>
                 {cartItems.length >= 1 && (
-                    <Checkout>
+                    <Checkout layout>
                         <h3>Subtotal: {totalPrice}$</h3>
-                        <button>Purchase</button>
+                        <button onClick={handleCheckout}>Purchase</button>
                     </Checkout>
                 )}
             </CartStyle>
