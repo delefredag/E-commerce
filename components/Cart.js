@@ -1,8 +1,25 @@
 import { useStateContext } from '../lib/context';
-import { CartWrapper, CartStyle, Card, CardInfo, EmptyStyle, Checkout, } from '../styles/CartStyles';
+import { CartWrapper, CartStyle, Card, CardInfo, EmptyStyle, Checkout, Cards,} from '../styles/CartStyles';
 import {Quantity} from '../styles/ProductDetails'
 import {FaShoppingCart} from 'react-icons/fa';
 import {AiFillMinusCircle, AiFillPlusCircle } from 'react-icons/ai'
+
+//Animation Variants
+const card = {
+    hidden: { opacity: 0, scale: 0.8 },
+    show: { opacity: 1, scare:1 }
+  };
+
+  const cards = {
+    hidden: { opacity: 1 },
+    show: {
+      opacity: 1,
+      transition: {
+        delayChildren: 0.4,
+        staggerChildren: 0.1,
+      }
+    }
+  };
 
 export default function Cart(){
     const {cartItems, setShowCart, onAdd, onRemove, totalPrice } = useStateContext();
@@ -30,14 +47,11 @@ export default function Cart(){
                     <FaShoppingCart/>
                 </EmptyStyle>
                 )}
+                <Cards variants={cards} initial="hidden" animate="show">
                 {cartItems.length >=1 && (
                     cartItems.map((item)=> {
                         return(
-                           <Card 
-                           initial={{opacity: 0, scale: 0.8}}
-                           animate={{opacity: 1, scale: 1 }}
-                           transition = {{delay: 0.3}}
-                           key={item.slug}>
+                           <Card variants={card} key={item.slug}>
                              <img 
                                 src={item.image.data.attributes.formats.thumbnail.url} 
                                 alt={item.title} />
@@ -60,6 +74,7 @@ export default function Cart(){
                     })
 
                 )}
+                </Cards>
                 {cartItems.length >= 1 && (
                     <Checkout>
                         <h3>Subtotal: {totalPrice}$</h3>
